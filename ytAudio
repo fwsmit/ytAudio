@@ -1,4 +1,4 @@
-#!/bin/zsh
+#!/bin/sh
 
 # how to call:
 # ytAudio "Artist" "Album" "Song name"
