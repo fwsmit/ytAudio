@@ -1,0 +1,109 @@
+#!/bin/zsh
+
+# how to call:
+# ytAudio "Artist" "Album" "Song name"
+# or: ytAudio "Artist" "Song name"
+# or: ytAudio URL
+#
+# TODO: Support single songs
+
+filetype="mp3"
+YTDL="yt-dlp"
+
+usage()
+{
+	echo "Usage:"
+	echo "$(basename $0) -a ARTIST -A ALBUM [-c ALBUMCOVER] URL "
+	# echo "-n: Don't recode to ogg"
+}
+
+download_audio(){
+    $YTDL -i -f bestaudio -o "%(playlist_index)s - %(title)s.%(ext)s" "$1"
+}
+
+recode_audio(){
+    find ./ -maxdepth 1 -type f \( -name "*.webm" -or -name "*mp3" -or -name "*.m4a" \) -execdir sh -c '
+    oldname="{}"; 
+    newname="${oldname%.*}.mp3"
+    ffmpeg -i "$oldname" "$newname"
+    ' \;
+}
+
+rename_tag_and_place(){ # renames all files and moves to directory $artist/$album ($1/$2)
+	artist="$1"
+	album="$2"
+	dir=""
+	if [ -n "$album" ]
+	then
+		dir="$artist/$album"
+	else
+		dir="$artist"
+	fi
+	mkdir -p "$dir"
+	for file in *.$filetype
+	do
+		echo "$file"
+        # Regex explanation: remove numbers in front  | remove artist in front | remove brackets at the end
+		title=$(echo "$file" | sed -r "s/.. - //" | sed -r "s/(.+?) ?- ?(.+)/\2/" | sed -r "s/([^\(]*).*/\1/" | sed -r "s/[ \t]+$//" | sed -r "s/\..*$//")
+        num="${file:0:2}"
+		echo "Title: $title"
+		echo "Number: $num"
+		id3v2 --artist "$artist" --song "$title" --album "$album" -T $num "$file"
+		id3v2 -l "$file"
+		mv "$file" "$dir/$title.mp3"
+	done
+	mv Folder.jpg "$dir"
+}
+
+move_audio(){
+	echo "Copying to the right directories"
+	# find -mindepth 1 -maxdepth 1 -type d -print -execdir cp "{}" /mnt/nas/moveToPhone -r \;
+	find -mindepth 1 -maxdepth 1 -type d -print -execdir cp "{}" /mnt/nas/Music -r \;
+}
+
+declare ARTIST
+declare ALBUM
+declare COVER
+declare HASCOVER
+# declare SINGLE=false
+
+while getopts 'ha:A:c:s' c
+do
+	case $c in
+		h) usage; exit ;;
+		a) ARTIST="$OPTARG" ;;
+		A) ALBUM="$OPTARG" ;;
+		c) COVER="$OPTARG"; HASCOVER=1; ;;
+        s) SINGLE=true ;;
+	esac
+done
+
+shift $((OPTIND-1))
+
+# if [ ( -z "asdf" ) -o ( -z "$ALBUM" ) ]
+if [ -z "$ARTIST" -o -z "$ALBUM" ]
+then
+	echo "Please provide an artist and album"
+	echo "$ARTIST"
+	echo "$ALBUM"
+	usage
+	exit 2
+fi
+
+URL="$1"
+
+echo "Downloading playlist $URL"
+
+tempDir=`mktemp -p /mnt/nas/tmp -d`
+# tempdir=`mktemp -p /tmp/ -d`
+cd "$tempDir"
+pwd
+download_audio "$URL"
+if [ ! -z $HASCOVER ]
+then
+    wget "$COVER" -O Folder.jpg --no-verbose
+fi
+recode_audio
+rename_tag_and_place "$ARTIST" "$ALBUM"
+move_audio
+pwd
