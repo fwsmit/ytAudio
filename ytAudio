@@ -9,11 +9,13 @@
 
 filetype="mp3"
 YTDL="yt-dlp"
+TMPDIR="/mnt/nas/tmp"
+DESTDIR="/mnt/nas/Music"
 
 usage()
 {
 	echo "Usage:"
-	echo "$(basename $0) -a ARTIST -A ALBUM [-c ALBUMCOVER] URL "
+	echo "$(basename $0) -a ARTIST -A ALBUM [-c ALBUMCOVER] [-d DESTDIR] [-t TMPDIR] URL "
 	# echo "-n: Don't recode to ogg"
 }
 
@@ -58,7 +60,7 @@ rename_tag_and_place(){ # renames all files and moves to directory $artist/$albu
 move_audio(){
 	echo "Copying to the right directories"
 	# find -mindepth 1 -maxdepth 1 -type d -print -execdir cp "{}" /mnt/nas/moveToPhone -r \;
-	find -mindepth 1 -maxdepth 1 -type d -print -execdir cp "{}" /mnt/nas/Music -r \;
+	find -mindepth 1 -maxdepth 1 -type d -print -execdir cp "{}" "$DESTDIR" -r \;
 }
 
 declare ARTIST
@@ -67,14 +69,16 @@ declare COVER
 declare HASCOVER
 # declare SINGLE=false
 
-while getopts 'ha:A:c:s' c
+while getopts 'ha:A:c:t:d:s' c
 do
 	case $c in
 		h) usage; exit ;;
 		a) ARTIST="$OPTARG" ;;
 		A) ALBUM="$OPTARG" ;;
 		c) COVER="$OPTARG"; HASCOVER=1; ;;
-        s) SINGLE=true ;;
+		t) TMPDIR="$OPTARG" ;;
+		d) DESTDIR="$OPTARG" ;;
+		s) SINGLE=true ;;
 	esac
 done
 
@@ -94,9 +98,8 @@ URL="$1"
 
 echo "Downloading playlist $URL"
 
-tempDir=`mktemp -p /mnt/nas/tmp -d`
-# tempdir=`mktemp -p /tmp/ -d`
-cd "$tempDir"
+TMPLOC="mktemp -p $TMPDIR -d"
+cd "$TMPLOC"
 pwd
 download_audio "$URL"
 if [ ! -z $HASCOVER ]
