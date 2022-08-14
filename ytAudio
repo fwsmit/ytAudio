@@ -19,6 +19,14 @@ usage()
 	# echo "-n: Don't recode to ogg"
 }
 
+check_depends() {
+	if ! command -v $1 >/dev/null 2>&1; then
+		echo "Error: $1 not found"
+		exit 1
+	fi
+
+}
+
 download_audio(){
     $YTDL -i -f bestaudio -o "%(playlist_index)s - %(title)s.%(ext)s" "$1"
 }
@@ -62,6 +70,9 @@ move_audio(){
 	# find -mindepth 1 -maxdepth 1 -type d -print -execdir cp "{}" /mnt/nas/moveToPhone -r \;
 	find -mindepth 1 -maxdepth 1 -type d -print -execdir cp "{}" "$DESTDIR" -r \;
 }
+
+check_depends $YTDL
+check_depends id3v2
 
 declare ARTIST
 declare ALBUM
