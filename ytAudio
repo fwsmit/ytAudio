@@ -11,6 +11,10 @@ filetype="mp3"
 YTDL="yt-dlp"
 TMPDIR="/mnt/nas/tmp"
 DESTDIR="/mnt/nas/Music"
+declare ARTIST
+declare ALBUM
+declare COVER
+declare HASCOVER
 
 usage()
 {
@@ -62,7 +66,9 @@ rename_tag_and_place(){ # renames all files and moves to directory $artist/$albu
 		id3v2 -l "$file"
 		mv "$file" "$dir/$title.mp3"
 	done
-	mv Folder.jpg "$dir"
+	if [ ! -z $HASCOVER ]; then
+		mv Folder.jpg "$dir"
+	fi
 }
 
 move_audio(){
@@ -73,11 +79,8 @@ move_audio(){
 
 check_depends $YTDL
 check_depends id3v2
+check_depends ffmpeg
 
-declare ARTIST
-declare ALBUM
-declare COVER
-declare HASCOVER
 # declare SINGLE=false
 
 while getopts 'ha:A:c:t:d:s' c
@@ -109,7 +112,12 @@ URL="$1"
 
 echo "Downloading playlist $URL"
 
-TMPLOC="mktemp -p $TMPDIR -d"
+TMPLOC=$(mktemp -p "$TMPDIR" -d)
+if [ -z "$TMPLOC" ]
+then
+	echo "Could not create tempdir"
+	exit 1
+fi
 cd "$TMPLOC"
 pwd
 download_audio "$URL"
