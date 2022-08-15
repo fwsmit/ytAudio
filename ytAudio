@@ -32,7 +32,7 @@ check_depends() {
 }
 
 download_audio(){
-    $YTDL -i -f bestaudio -o "%(playlist_index)s - %(title)s.%(ext)s" "$1"
+    $YTDL -i -f mp3/bestaudio -o "%(playlist_index)s - %(title)s.%(ext)s" "$1"
 }
 
 recode_audio(){
