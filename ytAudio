@@ -113,6 +113,11 @@ if [ ! -d "$DESTDIR" ]; then
 	exit 1
 fi
 
+if [ ! -d "$TMPDIR" ]; then
+	echo "Temp directory $TMPDIR doesn't exists"
+	exit 1
+fi
+
 URL="$1"
 
 echo "Downloading playlist $URL"
