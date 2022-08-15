@@ -108,6 +108,11 @@ then
 	exit 2
 fi
 
+if [ ! -d "$DESTDIR" ]; then
+	echo "Destination directory $DESTDIR doesn't exists"
+	exit 1
+fi
+
 URL="$1"
 
 echo "Downloading playlist $URL"
