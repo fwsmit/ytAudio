@@ -1,3 +1,4 @@
+#!/bin/python
 import pandas as pd
 import argparse as arg
 import subprocess
