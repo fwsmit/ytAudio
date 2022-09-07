@@ -133,7 +133,7 @@ pwd
 download_audio "$URL"
 if [ ! -z $HASCOVER ]
 then
-    wget "$COVER" -O Folder.jpg --no-verbose --no-check-certificate
+    wget --no-check-certificate "$COVER" -O Folder.jpg --no-verbose
 fi
 recode_audio
 rename_tag_and_place "$ARTIST" "$ALBUM"

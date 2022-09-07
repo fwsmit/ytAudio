@@ -5,8 +5,8 @@ import subprocess
 parser = arg.ArgumentParser()
 parser.add_argument('--tmpdir', type=str, help="Temporary directory to use")
 parser.add_argument('--destdir', type=str, help="Destination directory")
+parser.add_argument('--list', type=str, required=True, help="Excel sheet with the download info")
 args = parser.parse_args()
-df = pd.read_excel('TestList.xlsx')
 
 def runYtAudio(artist, album, cover_url, url, destdir, tempdir):
     command_line = ["./ytAudio", "-a", artist, "-A", album, "-c", cover_url]
@@ -22,6 +22,8 @@ def runYtAudio(artist, album, cover_url, url, destdir, tempdir):
 
 destdir = args.destdir
 tmpdir = args.tmpdir
+list = args.list
+df = pd.read_excel(list)
 
 first=True
 for i in range(len(df)):
