@@ -1,6 +1,11 @@
 import pandas as pd
+import argparse as arg
 import subprocess
 
+parser = arg.ArgumentParser()
+parser.add_argument('--tmpdir', type=str, help="Temporary directory to use")
+parser.add_argument('--destdir', type=str, help="Destination directory")
+args = parser.parse_args()
 df = pd.read_excel('TestList.xlsx')
 
 def runYtAudio(artist, album, cover_url, url, destdir, tempdir):
@@ -15,6 +20,8 @@ def runYtAudio(artist, album, cover_url, url, destdir, tempdir):
     print(command_line)
     subprocess.run(command_line)
 
+destdir = args.destdir
+tmpdir = args.tmpdir
 
 first=True
 for i in range(len(df)):
@@ -23,4 +30,4 @@ for i in range(len(df)):
         cover_url = df['Cover URL'][i]
         url = df['URL'][i]
 
-        runYtAudio(artist, album, cover_url, url, None, None)
+        runYtAudio(artist, album, cover_url, url, destdir, tmpdir)
