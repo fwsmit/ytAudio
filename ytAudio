@@ -58,8 +58,11 @@ rename_tag_and_place(){ # renames all files and moves to directory $artist/$albu
 	do
 		echo "$file"
         # Regex explanation: remove numbers in front  | remove artist in front | remove brackets at the end
-		title=$(echo "$file" | sed -r "s/.. - //" | sed -r "s/(.+?) ?- ?(.+)/\2/" | sed -r "s/([^\(]*).*/\1/" | sed -r "s/[ \t]+$//" | sed -r "s/\..*$//")
-        num="${file:0:2}"
+		#title=$(echo "$file" | sed -r "s/.. - //" | sed -r "s/(.+?) ?- ?(.+)/\2/" | sed -r "s/([^\(]*).*/\1/" | sed -r "s/[ \t]+$//" | sed -r "s/\..*$//")
+
+		# Remove number in front
+		title=$(echo "$file" | sed -r "s/.. - //")
+		num="${file:0:2}"
 		echo "Title: $title"
 		echo "Number: $num"
 		id3v2 --artist "$artist" --song "$title" --album "$album" -T $num "$file"
