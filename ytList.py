@@ -5,7 +5,6 @@ import subprocess
 from ytAudio import runYtAudio
 
 parser = arg.ArgumentParser()
-parser.add_argument('--tmpdir', type=str, help="Temporary directory to use")
 parser.add_argument('--destdir', type=str, help="Destination directory")
 parser.add_argument('--list', type=str, required=True, help="Excel sheet with the download info")
 args = parser.parse_args()
@@ -34,4 +33,4 @@ for i in range(len(df)):
         cover_url = df['Cover URL'][i]
         url = df['URL'][i]
 
-        runYtAudio(artist, album, cover_url, url, destdir, tmpdir)
+        runYtAudio(artist, album, cover_url, url, destdir)

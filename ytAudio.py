@@ -3,7 +3,7 @@ import json
 import yt_dlp
 import tempfile
 
-def runYtAudio(artist, album, cover_url, url, destdir, tempdir, testing=False):
+def runYtAudio(artist, album, cover_url, url, destdir, testing=False):
     ydl_opts = {
             'format': 'mp3/bestaudio/best',
             'outtmpl': '%(title)s.%(ext)s',
