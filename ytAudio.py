@@ -16,11 +16,11 @@ class MyCustomPP(yt_dlp.postprocessor.PostProcessor):
     def run(self, info):
         filepath = info.get("filepath")
         audiofile = eyed3.load(filepath)
-        audiofile.tag.artist = self.artist
-        audiofile.tag.album = self.album
+        audiofile.tag.artist = info.get("artist")
+        audiofile.tag.album = info.get("album")
 
         # Extract the title from the filename
-        audiofile.tag.title = os.path.basename(os.path.splitext(filepath)[0])
+        audiofile.tag.title = info.get("title")
         audiofile.tag.save()
         self.to_screen('Added metadata')
         return [], info
