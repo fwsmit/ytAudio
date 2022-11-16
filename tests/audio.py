@@ -11,7 +11,7 @@ class TestAudio(unittest.TestCase):
         print(dir)
         artist = "a"
         album = "b"
-        cover_url = "https://upload.wikimedia.org/wikipedia/en/thumb/8/80/Wikipedia-logo-v2.svg/155px-Wikipedia-logo-v2.svg.png?20111003033239"
+        cover_url = "https://www.sample-videos.com/img/Sample-jpg-image-50kb.jpg"
         url = "https://www.youtube.com/watch?v=BaW_jenozKc"
         runYtAudio(artist, album, cover_url, url, dir, testing=True)
 
@@ -20,12 +20,17 @@ class TestAudio(unittest.TestCase):
         self.assertTrue(os.path.isdir(destdir))
         destfile = os.path.join(destdir, "youtube-dl test video ＂'⧸⧹ä↭𝕐.mp3")
         self.assertTrue(os.path.isfile(destfile))
+        cover = os.path.join(destdir, "Folder.jpg")
+        self.assertTrue(os.path.isfile(cover))
         
+        remove = False
         # Remove files and test if directory is empty
-        os.remove(destfile)
-        self.assertFalse(os.listdir(destdir))
-        os.rmdir(destdir)
-        otherdir = os.path.join(dir, artist)
-        os.rmdir(otherdir)
-        os.rmdir(dir)
+        if remove:
+            os.remove(destfile)
+            os.remove(cover)
+            self.assertFalse(os.listdir(destdir))
+            os.rmdir(destdir)
+            otherdir = os.path.join(dir, artist)
+            os.rmdir(otherdir)
+            os.rmdir(dir)
 

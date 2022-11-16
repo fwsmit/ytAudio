@@ -2,6 +2,7 @@ import os
 import json
 import yt_dlp
 import tempfile
+import urllib.request
 
 def runYtAudio(artist, album, cover_url, url, destdir, testing=False):
     ydl_opts = {
@@ -19,4 +20,6 @@ def runYtAudio(artist, album, cover_url, url, destdir, testing=False):
     os.chdir(destination)
     
     with yt_dlp.YoutubeDL(ydl_opts) as ydl:
-        error_code = ydl.download(url)
+        info = ydl.extract_info(url, download=True)
+
+    urllib.request.urlretrieve(cover_url, "Folder.jpg")
