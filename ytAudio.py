@@ -18,6 +18,7 @@ class MyCustomPP(yt_dlp.postprocessor.PostProcessor):
         audiofile = eyed3.load(filepath)
         audiofile.tag.artist = info.get("artist")
         audiofile.tag.album = info.get("album")
+        audiofile.tag.track_num = (info.get("playlist_autonumber"), info.get("n_entries"))
 
         # Extract the title from the filename
         audiofile.tag.title = info.get("title")

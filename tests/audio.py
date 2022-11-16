@@ -66,6 +66,7 @@ class TestAudio(unittest.TestCase):
         self.assertEqual(audiofile.tag.artist, "Froukje")
         self.assertEqual(audiofile.tag.title, "Heb Ik Dat Gezegd?")
         self.assertEqual(audiofile.tag.album, "Licht En Donker")
+        self.assertEqual(audiofile.tag.track_num, (2, 6))
 
         remove = False
         # Remove files and test if directory is empty
