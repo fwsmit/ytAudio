@@ -10,7 +10,6 @@ parser.add_argument('--list', type=str, required=True, help="Excel sheet with th
 args = parser.parse_args()
 
 destdir = args.destdir
-tmpdir = args.tmpdir
 list = args.list
 df = pd.read_excel(list)
 
