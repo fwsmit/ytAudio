@@ -12,6 +12,8 @@ class TestAudio(unittest.TestCase):
         print(dir)
         artist = "a"
         album = "b"
+        filename = "youtube-dl test video ＂'⧸⧹ä↭𝕐.mp3"
+        title = "youtube-dl test video \"'/\ä↭𝕐"
         cover_url = "https://www.sample-videos.com/img/Sample-jpg-image-50kb.jpg"
         url = "https://www.youtube.com/watch?v=BaW_jenozKc"
         runYtAudio(artist, album, cover_url, url, dir, testing=True)
@@ -19,10 +21,16 @@ class TestAudio(unittest.TestCase):
         # test if the right files and directories exist
         destdir = os.path.join(dir, artist, album)
         self.assertTrue(os.path.isdir(destdir))
-        destfile = os.path.join(destdir, "youtube-dl test video ＂'⧸⧹ä↭𝕐.mp3")
+        destfile = os.path.join(destdir, filename)
         self.assertTrue(os.path.isfile(destfile))
         cover = os.path.join(destdir, "Folder.jpg")
         self.assertTrue(os.path.isfile(cover))
+
+        audiofile = eyed3.load(destfile)
+        self.assertEqual(audiofile.tag.artist, artist)
+        self.assertEqual(audiofile.tag.title, title)
+        self.assertEqual(audiofile.tag.album, album)
+        self.assertEqual(audiofile.tag.track_num, (None, None))
         
         remove = False
         # Remove files and test if directory is empty

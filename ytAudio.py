@@ -16,8 +16,15 @@ class MyCustomPP(yt_dlp.postprocessor.PostProcessor):
     def run(self, info):
         filepath = info.get("filepath")
         audiofile = eyed3.load(filepath)
-        audiofile.tag.artist = info.get("artist")
-        audiofile.tag.album = info.get("album")
+        if self.artist:
+            audiofile.tag.artist = self.artist
+        else:
+            audiofile.tag.artist = info.get("artist")
+
+        if self.album:
+            audiofile.tag.album = self.album
+        else:
+            audiofile.tag.album = info.get("album")
         audiofile.tag.track_num = (info.get("playlist_autonumber"), info.get("n_entries"))
 
         # Extract the title from the filename
