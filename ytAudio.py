@@ -26,11 +26,14 @@ class MyCustomPP(yt_dlp.postprocessor.PostProcessor):
         else:
             audiofile.tag.album = info.get("album")
         audiofile.tag.track_num = (info.get("playlist_autonumber"), info.get("n_entries"))
+        release_year = info.get("release_year")
+        if release_year:
+            audiofile.tag.recording_date = eyed3.core.Date(release_year)
 
         # Extract the title from the filename
         audiofile.tag.title = info.get("title")
         audiofile.tag.save()
-        self.to_screen('Added metadata')
+        self.to_screen('Processed {} - {}'.format(audiofile.tag.artist, audiofile.tag.title))
         return [], info
 
 def runYtAudio(artist, album, cover_url, url, destdir, testing=False):
