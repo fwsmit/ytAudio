@@ -14,7 +14,7 @@ class TestAudio(unittest.TestCase):
         album = "b"
         filename = "youtube-dl test video ＂'⧸⧹ä↭𝕐.mp3"
         title = "youtube-dl test video \"'/\ä↭𝕐"
-        cover_url = "https://www.sample-videos.com/img/Sample-jpg-image-50kb.jpg"
+        cover_url = "https://lh3.googleusercontent.com/q9xfDFsJXtmAU8MNFyGCMMHe7upmI6S8eDNrPdbJFRr-jeo_xNy8JDutjP2xdpmtl0xfQJYleYrXQGc=w544-h544-l90-rj"
         url = "https://www.youtube.com/watch?v=BaW_jenozKc"
         runYtAudio(artist, album, cover_url, url, dir, testing=True)
 
