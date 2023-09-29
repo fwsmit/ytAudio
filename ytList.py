@@ -1,5 +1,6 @@
 #!/bin/python
 import pandas as pd
+import numpy as np
 import argparse as arg
 import subprocess
 from ytAudio import runYtAudio
@@ -15,9 +16,16 @@ df = pd.read_excel(list)
 
 first=True
 for i in range(len(df)):
-        artist = str(df['Artist'][i])
-        album = str(df['Album'][i])
-        cover_url = str(df['Cover URL'][i])
-        url = str(df['URL'][i])
+    keys = ["Artist", "Album", "Cover URL", "URL"]
+    for key in keys:
+        if pd.isnull(df[key][i]):
+            print(key, "is empty in row", i)
+            exit(1)
 
-        runYtAudio(artist, album, cover_url, url, destdir)
+for i in range(len(df)):
+    artist = str(df['Artist'][i])
+    album = str(df['Album'][i])
+    cover_url = str(df['Cover URL'][i])
+    url = str(df['URL'][i])
+
+    runYtAudio(artist, album, cover_url, url, destdir)
