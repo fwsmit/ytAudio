@@ -15,9 +15,9 @@ df = pd.read_excel(list)
 
 first=True
 for i in range(len(df)):
-        artist = df['Artist'][i]
-        album = df['Album'][i]
-        cover_url = df['Cover URL'][i]
-        url = df['URL'][i]
+        artist = str(df['Artist'][i])
+        album = str(df['Album'][i])
+        cover_url = str(df['Cover URL'][i])
+        url = str(df['URL'][i])
 
         runYtAudio(artist, album, cover_url, url, destdir)
