@@ -7,30 +7,20 @@ import eyed3
 
 
 class MyCustomPP(yt_dlp.postprocessor.PostProcessor):
-    def __init__(self, artist, album):
+    def __init__(self):
         yt_dlp.postprocessor.PostProcessor.__init__(self)
-        self.artist = artist
-        self.album = album
 
     def run(self, info):
         filepath = info.get("filepath")
         audiofile = eyed3.load(filepath)
-        if self.artist:
-            audiofile.tag.artist = self.artist
-        else:
-            audiofile.tag.artist = info.get("artist")
-
-        if self.album:
-            audiofile.tag.album = self.album
-        else:
-            audiofile.tag.album = info.get("album")
+        audiofile.tag.artist = info.get("artist")
+        audiofile.tag.album = info.get("album")
         audiofile.tag.track_num = (
             info.get("playlist_autonumber"), info.get("n_entries"))
         release_year = info.get("release_year")
         if release_year:
             audiofile.tag.recording_date = eyed3.core.Date(release_year)
 
-        # Extract the title from the filename
         audiofile.tag.title = info.get("title")
         audiofile.tag.save()
         self.to_screen(
@@ -38,24 +28,56 @@ class MyCustomPP(yt_dlp.postprocessor.PostProcessor):
         return [], info
 
 
-def runYtAudio(artist, album, cover_url, url, destdir, testing=False):
+def get_artist(info):
+    a = info.get("artist")
+    if a:
+        return a
+    else:
+        return info.get("entries")[0].get("artist")
+
+
+def get_album(info):
+    a = info.get("album")
+    if a:
+        return a
+    else:
+        return info.get("entries")[0].get("album")
+
+
+def runYtAudio(url, destdir, testing=False, check_metadata=False):
     ydl_opts = {
         'format': 'mp3/bestaudio/best',
-        'outtmpl': '%(title)s.%(ext)s',
+        'outtmpl': '%(artist,channel)s/%(album,playlist_title)s/%(title)s.%(ext)s',
         'test': testing,
         'embed-metadata': True,
+        'quiet': True,
         'postprocessors': [{  # Convert to mp3
             'key': 'FFmpegExtractAudio',
             'preferredcodec': 'mp3',
         }]
     }
 
-    destination = os.path.join(destdir, artist, album)
-    os.makedirs(destination, exist_ok=True)
-    os.chdir(destination)
+    # destination = os.path.join(destdir, artist, album)
+    os.makedirs(destdir, exist_ok=True)
+    os.chdir(destdir)
 
     with yt_dlp.YoutubeDL(ydl_opts) as ydl:
-        ydl.add_post_processor(MyCustomPP(artist, album), when='post_process')
-        _ = ydl.extract_info(url, download=True)
+        if check_metadata:
+            info = ydl.extract_info(url, download=False)
+            if not get_artist(info):
+                print("Could not find artist for: ",
+                      info.get("title"), "(", url, ")")
+                print(info['album'])
+                return -1
 
-    urllib.request.urlretrieve(cover_url, "Folder.jpg")
+            if not get_album(info):
+                print("Could not find album for: ",
+                      info.get("title"), "(", url, ")")
+                return -1
+            else:
+                print("Info: {} - {}".format(get_artist(info), get_album(info)))
+        else:
+            ydl.add_post_processor(MyCustomPP(), when='post_process')
+            _ = ydl.extract_info(url, download=True)
+
+    # urllib.request.urlretrieve(cover_url, "Folder.jpg")

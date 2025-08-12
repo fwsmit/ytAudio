@@ -7,25 +7,28 @@ from ytAudio import runYtAudio
 
 parser = arg.ArgumentParser()
 parser.add_argument('--destdir', type=str, help="Destination directory")
-parser.add_argument('--list', type=str, required=True, help="Excel sheet with the download info")
+parser.add_argument('--list', type=str, required=True,
+                    help="TXT list with youtube URL's")
 args = parser.parse_args()
 
 destdir = args.destdir
-list = args.list
-df = pd.read_excel(list)
+lst = args.list
+with open(lst, 'r') as file:
+    URLS = file.read().splitlines()
 
-first=True
-for i in range(len(df)):
-    keys = ["Artist", "Album", "Cover URL", "URL"]
-    for key in keys:
-        if pd.isnull(df[key][i]):
-            print(key, "is empty in row", i)
-            exit(1)
+print("Checking metadata")
 
-for i in range(len(df)):
-    artist = str(df['Artist'][i])
-    album = str(df['Album'][i])
-    cover_url = str(df['Cover URL'][i])
-    url = str(df['URL'][i])
+for url in URLS:
+    if runYtAudio(url, destdir, testing=True, check_metadata=True) == -1:
+        print("ERROR: url did not contain artist and album metadata: {} (nr {}) ".format(
+            url, URLS.index(url)+1))
+        exit(1)
 
-    runYtAudio(artist, album, cover_url, url, destdir)
+answer = input("Continue downloading? (y/N): ")
+if answer.lower() not in ["y", "yes"]:
+    exit(0)
+
+for url in URLS:
+    runYtAudio(url, destdir, testing=False, check_metadata=False)
+
+print("Finished downloading to", destdir)
