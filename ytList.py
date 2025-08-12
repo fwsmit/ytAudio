@@ -1,8 +1,5 @@
 #!/bin/python
-import pandas as pd
-import numpy as np
 import argparse as arg
-import subprocess
 from ytAudio import runYtAudio
 
 parser = arg.ArgumentParser()
